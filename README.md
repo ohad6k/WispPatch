@@ -1,201 +1,173 @@
-# WispPatch
+<div align="center">
 
-![WispPatch mascot, motion states, and approval UI](assets/ChatGPT%20Image%20Jul%201,%202026,%2012_16_11%20PM%20(1).png)
+# ✨ WispPatch
 
-Local visual UI patching with Wisp before source code changes.
+### Point at any website. Tell Wisp. Watch the design change.
 
+**Wisp is a glowing design spirit that lives in your browser.** Click any section of a running site, say what you want, and Wisp flies over, scans it, and applies a live visual patch — then hands your coding agent everything it needs to make the change real.
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-ffd400?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.1.0-f7bd00?style=flat-square)](package.json)
-[![Runtime](https://img.shields.io/badge/runtime-Node.js%2020-1f2937?style=flat-square)](package.json)
+[![Runtime](https://img.shields.io/badge/Node.js-20+-1f2937?style=flat-square)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178c6?style=flat-square)](package.json)
-[![Playwright](https://img.shields.io/badge/browser-Playwright-2e7d32?style=flat-square)](package.json)
-[![Local Only](https://img.shields.io/badge/scope-local--only-111827?style=flat-square)](#safety-model)
-[![License](https://img.shields.io/badge/license-not%20declared-lightgrey?style=flat-square)](#license)
+[![Local Only](https://img.shields.io/badge/100%25-local-111827?style=flat-square)](#the-safety-model)
 
-WispPatch opens a local browser overlay on top of a running website. Click a section, tell Wisp what to change, preview a temporary visual or copy patch, then export before/after screenshots and a VisualPatch implementation prompt for a coding agent.
+<br />
 
-`v0.1.0` is a local-first MVP. It does not edit your repository, upload screenshots, require login, or call a hosted AI provider.
+![Wisp flying to a section, patching it live, and presenting manga-style approval buttons](docs/media/wisp-demo.gif)
 
-WispPatch's own product design contract lives in [DESIGN.md](DESIGN.md). Use it for Wisp-owned UI, docs, and future runtime design decisions.
+*Real session: click a section → Wisp flies in → live design pass → Lock It In.*
 
-**Contents**
+</div>
 
-[Quick Start](#quick-start) | [How It Works](#how-it-works) | [VisualPatch Export](#visualpatch-export) | [Built-In Design Loop](#built-in-design-loop) | [Safety Model](#safety-model) | [Roadmap](#roadmap)
+---
 
-## Wisp Design Skill
+## Why WispPatch
 
-WispPatch has a design skill contract at the top of the project, not hidden in implementation details:
+Coding agents are great at writing code and famously mediocre at *seeing* design. WispPatch flips the loop:
 
-- [DESIGN.md](DESIGN.md) defines WispPatch's product taste, palette, typography, motion, component rules, and anti-patterns.
-- [docs/design-workflow.md](docs/design-workflow.md) defines the agent workflow inspired by Open Design-style file contracts, frontend taste skills, critique gates, and the correction loop from this project.
-- Runtime feedback becomes rules: text requests stay text-only, Wisp remains a character, chat stays available after approval, manga UI fidelity is enforced, and visual fixes require browser evidence.
-- Exported briefs point future agents back to these rules so Wisp keeps learning from mistakes instead of repeating them.
+- 🎯 **Design on the real page, not a mockup.** Click any element of any running website. Wisp applies a reversible visual patch right in the browser — no source edits, nothing breaks.
+- 👻 **A mascot, not a menu.** Wisp flies to your click with a comet trail, scans the target with a holo-ring, blinks, watches your cursor, and presents results like a tiny manga hero. Design tools don't have to feel like tax software.
+- 🤝 **Built for agent handoff.** One click exports before/after screenshots, the exact CSS operations, the page's captured design DNA, a critique scorecard, and an implementation prompt for Claude Code, Cursor, or Codex.
+- 🔒 **100% local.** No login, no cloud, no telemetry, no hosted AI. Refresh the page and the patch is gone.
 
-## Quick Start
+## Quick start
 
-Clone or open the project, install dependencies, and build the CLI:
+```bash
+git clone https://github.com/ohad6k/WispPatch.git
+cd WispPatch
+npm install && npm run build
 
-```powershell
-npm install
-npm run build
+# try it on the bundled demo page
+npm run demo                          # terminal 1
+node dist/cli/index.js http://127.0.0.1:4177   # terminal 2
 ```
 
-Run the included demo page:
+Or point it at anything you're running locally:
 
-```powershell
-npm run demo
-```
-
-In another terminal, launch WispPatch against the demo:
-
-```powershell
-node dist/cli/index.js http://127.0.0.1:4177
+```bash
+node dist/cli/index.js http://localhost:3000
 ```
 
 Then:
 
-1. Click a section in the browser.
-2. Type a goal or choose a quick action.
-3. Review Wisp's temporary visual patch.
-4. Use `Lock It In` to export the proof package.
+1. **Click** the section you want to change.
+2. **Tell Wisp** a goal — `Signature polish`, `CTA focus`, `dark mode`, `change Account notes to Account` — or type your own.
+3. **React** with the manga buttons: `LOCK IT IN` ⭐ / `TRY AGAIN` ↻ / `PUSH FURTHER` ↗ / `UNDO` ↩.
+4. **Hand off** — `Lock It In` writes a full proof package to `.wisppatch/latest`.
 
-## How It Works
-
-WispPatch is a small TypeScript CLI and injected browser overlay:
+## How it works
 
 ```text
-wisppatch URL
-  -> opens Chromium with Playwright
-  -> injects Wisp into a Shadow DOM overlay
-  -> lets you select a real page element
-  -> applies reversible visual or text operations
-  -> exports screenshots and implementation instructions
+wisppatch <url>
+  → opens Chromium via Playwright
+  → injects Wisp into a Shadow DOM overlay (zero page pollution)
+  → you click a real element on the page
+  → Wisp reads the page's design DNA: colors, fonts, spacing, radii, real CTAs
+  → applies a reversible, target-aware visual recipe
+  → exports screenshots + machine-readable patch + agent prompt
 ```
 
-The current target-aware design passes cover:
+Every design pass inspects the target first — existing layout, real button styles, media, density — so patches extend the product's own design system instead of pasting a generic AI look on top. Purple-gradient slop is detected and refused.
 
-- `Signature polish`
-- `Design system`
-- `Editorial layout`
-- `CTA focus`
-- typed goals such as spacing, dark mode, cleaner cards, product clarity, or brand polish
-- simple text replacements such as `change Account notes to Account`
+## The handoff package
 
-Each pass inspects the selected target before applying layout, typography, spacing, state, and accent decisions. The preview is still temporary: the durable source-code change happens later, when a coding agent implements the approved VisualPatch target inside the real app.
+`Lock It In` exports `.wisppatch/latest/` with everything an implementation agent needs:
 
-## VisualPatch Export
+| The essentials | |
+| --- | --- |
+| `before.png` / `after.png` | Visual proof of the approved direction. |
+| `visualpatch.json` | Target selector, bounds, goal, and the exact CSS operations. |
+| `implement.md` | Ready-to-paste prompt for your coding agent. |
+| `review.html` | Local side-by-side review page. |
 
-Approved patches are written to `.wisppatch/latest`:
+<details>
+<summary><strong>…plus the full design contract (14 more files)</strong></summary>
 
 | File | Purpose |
 | --- | --- |
-| `before.png` | Screenshot before Wisp applies the visual patch. |
-| `after.png` | Screenshot after the approved temporary patch. |
-| `visualpatch.json` | Machine-readable URL, viewport, target selector, bounds, goal, recipe, operations, and acceptance criteria. |
-| `design-brief.json` | Machine-readable design contract for agents and future tooling. |
-| `design-brief.md` | Human-readable Wisp design brief with skill stack, workflow, critique rubric, and completion gates. |
-| `design-analysis.json` | Machine-readable before/after target analysis: structure, density, assets, computed visual styles, signals, and risks. |
-| `design-analysis.md` | Human-readable target context so agents can avoid generic design decisions before editing source code. |
-| `design-directions.json` | Machine-readable direction map with target-aware implementation routes. |
-| `design-directions.md` | Human-readable variants inspired by the Wisp design loop: choose a route, justify it, then implement. |
-| `design-critique.json` | Machine-readable automatic preflight critique with scores, hard fails, and quick wins. |
-| `design-critique.md` | Human-readable critique report so weak design output is caught before implementation handoff. |
-| `design-gate.json` | Machine-readable pass/fail gate for design implementation proof. |
-| `design-gate.md` | Agent scorecard for context inventory, asset usage, variation decision, anti-slop scan, responsive proof, and rubric scoring. |
-| `implement.md` | Agent handoff prompt for implementing the approved target in source code. |
-| `review.html` | Local review page for comparing the exported proof. |
+| `design-brief.md/json` | Wisp design contract: skill stack, workflow, critique rubric, completion gates. |
+| `design-analysis.md/json` | Before/after target analysis: structure, density, assets, computed styles, risks. |
+| `design-dna.md/json` | Page-level design DNA: colors, fonts, spacing, assets, framework hints. |
+| `design-assets.md/json` | Real-assets-first registry with quality scores and honest-placeholder rules. |
+| `design-system.md/json` | Reusable DESIGN.md-style token and anti-slop contract distilled from the page. |
+| `design-iterations.md/json` | Loop history: attempts, retries, pushes, undos, accepted pass. |
+| `design-directions.md/json` | Alternate direction map with target-aware implementation routes. |
+| `design-critique.md/json` | Automatic preflight critique with scores, hard fails, and quick wins. |
+| `design-verification.md/json` | Browser-verified proof: visibility, desktop/mobile overflow, critique pass. |
+| `design-gate.md/json` | Pass/fail scorecard the implementing agent must complete. |
 
-Send `implement.md` plus the screenshots to Codex, Claude Code, Cursor, or another coding agent when you want the approved visual direction implemented in the actual project.
+</details>
 
-## Built-In Design Loop
+The exported prompt tells the next agent to read the captured design system, choose a justified direction, avoid generic AI patterns (card spam, purple-blue gradients, fake metrics), preserve app behavior, and verify the implementation against `after.png` in a real browser. Design feedback becomes rules, not vibes.
 
-WispPatch does more than export a CSS diff. The generated implementation prompt includes a Wisp Design Contract so the next coding agent has a stronger quality bar:
+## Meet Wisp
 
-- read `.wisppatch/latest/design-brief.md` before editing
-- use `.wisppatch/latest/design-analysis.md` to understand the selected target's structure, assets, controls, typography, and risks
-- choose or justify a route from `.wisppatch/latest/design-directions.md` before source edits
-- address `.wisppatch/latest/design-critique.md` hard fails and quick wins before handoff
-- complete `.wisppatch/latest/design-gate.md` before claiming implementation
-- study `before.png`, `after.png`, and the selected target bounds
-- look for `DESIGN.md`, brand docs, style guides, tokens, and component docs
-- use the local Wisp asset sheets as visual references when relevant
-- combine Open Design's file-contract workflow with `design-taste-frontend` and Huashu-style critique
-- avoid generic AI UI patterns such as card spam, purple-blue gradients, fake metrics, and vague marketing copy
-- preserve app behavior, routes, auth, billing, provider setup, and data fetching
-- implement only the code needed to match the approved target
-- score the result against a 5-part critique rubric before handoff
-- fail the handoff if the scorecard exposes fake content, weak hierarchy, generic visuals, missing responsive proof, or scope creep
-- run the app and compare the implemented result against `after.png`
+<div align="center">
 
-See [docs/design-workflow.md](docs/design-workflow.md) for the full workflow.
+![Wisp character turnaround and expression sheet](assets/wisp-character-sheet.png)
 
-## Wisp Learning Rules
+</div>
 
-WispPatch treats design feedback as product rules. The runtime and exported briefs should preserve lessons from real correction loops:
+Wisp is a character with a job, not a cursor sticker:
 
-- If a user asks for a text change, change text only. Do not apply a visual recipe unless the request is clearly about visual design.
-- After Wisp presents a patch, the user can keep chatting. Approval is not a dead end.
-- Wisp is a character, not a cursor sticker. It flies to the target, inspects it, then faces the user while waiting.
-- Chat bubbles belong above/right of Wisp like a comic thought bubble and must not be covered by the mascot.
-- The prompt, chips, and approval buttons should stay close to the supplied manga UI sheets: hard ink borders, angular strip controls, gold accents, and halftone texture.
-- Wisp face details must stay aligned and readable over transparent yellow assets.
-- Every visual correction should be verified with screenshots or browser geometry, then folded back into docs or runtime constraints.
+| State | What you see |
+| --- | --- |
+| **Idle** | Soft bob, ambient sparkles, eyes that follow your cursor. |
+| **Flying** | Squash-and-stretch comet with a golden particle trail. |
+| **Scanning** | Hovers over the target with rippling holo-rings, eyes sweeping. |
+| **Patching** | Spark bursts over the section as changes land. |
+| **Presenting** | Floats beside a glowing result card, waiting for your verdict. |
+| **Success** | Celebration bounce + star burst when you lock it in. |
 
-## Safety Model
+The full brand kit — motion sheets, manga UI components, palette — lives in [`assets/`](assets) and is MIT-licensed with the code. Remix away.
+
+## The safety model
 
 WispPatch v0.1.0 is intentionally narrow:
 
-- no login
-- no cloud upload
-- no database
-- no hosted AI provider
-- no automatic source edits
-- no MCP server yet
-- no browser extension packaging yet
-
-The browser patch disappears on refresh unless WispPatch reapplies it. Screenshots stay on your machine unless you choose to share them.
-
-## Project Layout
-
-```text
-src/cli          CLI, browser launch, local bridge, output paths
-src/injected     Wisp overlay, target picker, reversible visual recipes
-src/export       VisualPatch JSON, implementation prompt, review HTML
-assets           Wisp mascot and UI direction sheets
-demo             Static demo target for local verification
-docs             Product and implementation notes
-DESIGN.md        WispPatch product design contract
-```
+- ✅ reversible browser-only patches — refresh and it's gone
+- ✅ screenshots stay on your machine
+- ❌ no login, cloud, database, or hosted AI provider
+- ❌ no automatic source edits — durable changes go through *your* coding agent, with your review
 
 ## Commands
 
 | Command | Description |
 | --- | --- |
-| `npm run check` | Type-check the project. |
 | `npm run build` | Build the CLI and injected overlay into `dist`. |
 | `npm run demo` | Serve the local demo page at `http://127.0.0.1:4177`. |
-| `node dist/cli/index.js <url>` | Launch WispPatch against a target page. |
+| `npm run qa:demo` | Headless end-to-end check: select → patch → export → verify artifacts. |
+| `npm run check` | Type-check the project. |
+| `node dist/cli/index.js <url>` | Launch WispPatch against any page. |
 
 ## Roadmap
 
-- higher-fidelity Wisp motion and sprite polish
-- richer visual recipes and target-aware layout fixes
-- side-by-side diff review
-- stronger implementation-agent adapters
-- optional MCP workflow
-- optional browser extension
-- optional hosted/shareable review links
+- [ ] Wisp emotion set: proud, thinking, sleepy, surprised
+- [ ] Richer visual recipes and multi-target passes
+- [ ] Side-by-side diff review UI
+- [ ] MCP server so agents can drive Wisp directly
+- [ ] Browser extension packaging
+- [ ] Optional shareable review links
 
 ## Contributing
 
-Keep v0.1.0 local-first and source-safe. Runtime patches should be reversible, exported prompts should stay scoped to the approved visual target, and any future provider integration must have explicit user consent and clear secret handling.
+PRs welcome. Ground rules for v0.1.0: local-first, source-safe, reversible patches, and exported prompts stay scoped to the approved target. Before sending a change:
 
-Before sending a change:
-
-```powershell
-npm run check
-npm run build
+```bash
+npm run check && npm run build && npm run qa:demo
 ```
+
+WispPatch's own design contract lives in [DESIGN.md](DESIGN.md), and the agent workflow in [docs/design-workflow.md](docs/design-workflow.md).
 
 ## License
 
-No license has been declared yet. Add a license before publishing this repository as reusable open source.
+[MIT](LICENSE) — code, mascot, and brand kit.
+
+---
+
+<div align="center">
+
+**If Wisp made you smile, [star the repo](https://github.com/ohad6k/WispPatch) ⭐ — it keeps the little ghost glowing.**
+
+</div>

@@ -36,6 +36,30 @@ const requiredChecks: DesignGateCheck[] = [
       "Read design-analysis.md and explain which structure, density, asset, typography, or risk signals shaped the implementation."
   },
   {
+    id: "design-dna-used",
+    label: "Page design DNA used",
+    evidence:
+      "Read design-dna.md and explain which page-level color, type, spacing, asset, component, or risk signals were preserved or intentionally superseded."
+  },
+  {
+    id: "asset-registry-used",
+    label: "Asset registry used",
+    evidence:
+      "Read design-assets.md and explain which real assets were reused, which missing logo/product/UI needs were resolved, and which placeholders were honest."
+  },
+  {
+    id: "design-system-used",
+    label: "Reusable design system used",
+    evidence:
+      "Read design-system.md and explain which token, asset, component, and anti-slop rules were used or intentionally superseded."
+  },
+  {
+    id: "iteration-history-used",
+    label: "Design iteration history used",
+    evidence:
+      "Read design-iterations.md. Identify the accepted pass, pushed/refined passes, and any undone routes that should not be implemented."
+  },
+  {
     id: "asset-first",
     label: "Real assets or honest placeholders used",
     evidence:
@@ -58,6 +82,12 @@ const requiredChecks: DesignGateCheck[] = [
     label: "Automatic critique addressed",
     evidence:
       "Read design-critique.md. Resolve, supersede with stronger visual evidence, or document every hard fail and quick win."
+  },
+  {
+    id: "browser-verification",
+    label: "Browser verification checked",
+    evidence:
+      "Read design-verification.md. Resolve or document failed screenshot, target visibility, desktop/mobile overflow, analysis, DNA, iteration, or critique checks."
   },
   {
     id: "anti-slop-scan",
@@ -125,10 +155,15 @@ export function createWispDesignGate(patch: VisualPatchDocument): WispDesignGate
     requiredFinalProof: [
       "Context inventory",
       "Target analysis findings used",
+      "Page design DNA findings used or superseded",
+      "Asset registry findings, missing asset needs, and placeholder decisions",
+      "Reusable design-system.md rules used or superseded",
+      "Design iteration accepted pass and avoided routes",
       "Design direction sentence",
       "Chosen design-directions.md route or superseding evidence",
       "Variation decision",
       "Design-critique.md result and addressed quick wins",
+      "Design-verification.md result and failed checks addressed",
       "Anti-slop scan result",
       "Rubric scores",
       "Desktop and mobile visual checks",

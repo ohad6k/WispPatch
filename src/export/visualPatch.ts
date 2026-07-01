@@ -15,6 +15,20 @@ export type VisualOperation =
       text: string;
     };
 
+export type DesignIteration = {
+  id: number;
+  action: "initial" | "retry" | "push" | "refine" | "undo";
+  goal: string;
+  effectiveGoal: string;
+  recipe: string;
+  intensity: number;
+  operationCount: number;
+  operationTypes: string[];
+  changedSelectors: string[];
+  summary: string;
+  selected: boolean;
+};
+
 export type TargetDesignAnalysis = {
   phase: "before" | "after";
   summary: {
@@ -71,6 +85,56 @@ export type TargetDesignAnalysis = {
   risks: string[];
 };
 
+export type PageDesignDna = {
+  title: string;
+  language: string;
+  colorScheme: string;
+  tokens: {
+    colors: Array<{
+      value: string;
+      count: number;
+      roles: string[];
+    }>;
+    fonts: Array<{
+      family: string;
+      count: number;
+    }>;
+    radii: Array<{
+      value: string;
+      count: number;
+    }>;
+    shadows: Array<{
+      value: string;
+      count: number;
+    }>;
+    spacing: Array<{
+      value: string;
+      count: number;
+    }>;
+  };
+  assets: Array<{
+    kind: string;
+    source: string;
+    alt: string;
+    role: string;
+    width: number;
+    height: number;
+  }>;
+  componentSignals: {
+    headings: number;
+    links: number;
+    buttons: number;
+    inputs: number;
+    media: number;
+    navs: number;
+    forms: number;
+    cards: number;
+  };
+  frameworkHints: string[];
+  designSignals: string[];
+  risks: string[];
+};
+
 export type VisualPatchPayload = {
   url: string;
   viewport: {
@@ -90,6 +154,9 @@ export type VisualPatchPayload = {
     };
   };
   operations: VisualOperation[];
+  acceptedIterationId?: number;
+  iterations?: DesignIteration[];
+  designDna?: PageDesignDna;
   analysis?: {
     before?: TargetDesignAnalysis;
     after?: TargetDesignAnalysis;
@@ -109,10 +176,20 @@ export type VisualPatchDocument = VisualPatchPayload & {
     designBriefJson: string;
     designAnalysis: string;
     designAnalysisJson: string;
+    designDna: string;
+    designDnaJson: string;
+    designAssets: string;
+    designAssetsJson: string;
+    designSystem: string;
+    designSystemJson: string;
+    designIterations: string;
+    designIterationsJson: string;
     designDirections: string;
     designDirectionsJson: string;
     designCritique: string;
     designCritiqueJson: string;
+    designVerification: string;
+    designVerificationJson: string;
     designGate: string;
     designGateJson: string;
     implement: string;
@@ -138,10 +215,20 @@ export function createVisualPatchDocument(
       designBriefJson: ".wisppatch/latest/design-brief.json",
       designAnalysis: ".wisppatch/latest/design-analysis.md",
       designAnalysisJson: ".wisppatch/latest/design-analysis.json",
+      designDna: ".wisppatch/latest/design-dna.md",
+      designDnaJson: ".wisppatch/latest/design-dna.json",
+      designAssets: ".wisppatch/latest/design-assets.md",
+      designAssetsJson: ".wisppatch/latest/design-assets.json",
+      designSystem: ".wisppatch/latest/design-system.md",
+      designSystemJson: ".wisppatch/latest/design-system.json",
+      designIterations: ".wisppatch/latest/design-iterations.md",
+      designIterationsJson: ".wisppatch/latest/design-iterations.json",
       designDirections: ".wisppatch/latest/design-directions.md",
       designDirectionsJson: ".wisppatch/latest/design-directions.json",
       designCritique: ".wisppatch/latest/design-critique.md",
       designCritiqueJson: ".wisppatch/latest/design-critique.json",
+      designVerification: ".wisppatch/latest/design-verification.md",
+      designVerificationJson: ".wisppatch/latest/design-verification.json",
       designGate: ".wisppatch/latest/design-gate.md",
       designGateJson: ".wisppatch/latest/design-gate.json",
       implement: ".wisppatch/latest/implement.md",
@@ -155,8 +242,13 @@ export function createVisualPatchDocument(
       "Avoid generic AI UI patterns; keep typography, spacing, color, and copy deliberate.",
       "Respect DESIGN.md, brand docs, design tokens, and component conventions when present.",
       "Use design-analysis.md to account for target structure, density, controls, assets, and risks.",
+      "Use design-dna.md to ground typography, color, assets, and component decisions in the surrounding page.",
+      "Use design-assets.md to classify real assets, missing asset needs, and honest placeholder requirements.",
+      "Use design-system.md as the reusable DESIGN.md-style contract distilled from captured page DNA.",
+      "Use design-iterations.md to understand which routes were tried, pushed, undone, and accepted.",
       "Use design-directions.md to choose or justify the implementation direction before source edits.",
       "Use design-critique.md to resolve preflight issues before handoff.",
+      "Use design-verification.md as the automated browser proof for the exported artifact.",
       "Preserve or add appropriate interaction states for changed controls.",
       "Complete design-gate.md before claiming the implementation is done.",
       "Score the design brief rubric before handoff; every dimension should be at least 8/10 or have a documented blocker.",

@@ -1,4 +1,4 @@
-import type { TargetDesignAnalysis, VisualPatchDocument } from "./visualPatch.js";
+import type { PageDesignDna, TargetDesignAnalysis, VisualPatchDocument } from "./visualPatch.js";
 
 export type CritiqueScore = {
   dimension: "Philosophy alignment" | "Visual hierarchy" | "Craft quality" | "Functionality" | "Originality";
@@ -40,6 +40,22 @@ function hasRisk(analysis: TargetDesignAnalysis | undefined, pattern: RegExp): b
   return Boolean(analysis?.risks.some((risk) => pattern.test(risk)));
 }
 
+function hasDnaRisk(dna: PageDesignDna | undefined, pattern: RegExp): boolean {
+  return Boolean(dna?.risks.some((risk) => pattern.test(risk)));
+}
+
+function hasDetectedAiSignatureRisk(analysis: TargetDesignAnalysis | undefined): boolean {
+  return hasRisk(analysis, /Generic filler copy|Possible purple-blue|Card-heavy/i);
+}
+
+function hasDetectedDnaAiSignatureRisk(dna: PageDesignDna | undefined): boolean {
+  return hasDnaRisk(dna, /Generic filler copy|Purple-blue|Card-heavy|Generic font/i);
+}
+
+function hasDetectedFakeProofRisk(analysis: TargetDesignAnalysis | undefined): boolean {
+  return hasRisk(analysis, /^Generic filler copy or fake proof may be present/i);
+}
+
 function usesCssValue(patch: VisualPatchDocument, pattern: RegExp): boolean {
   return patch.operations.some((operation) => {
     if (operation.type === "text_replace") return pattern.test(operation.text);
@@ -58,7 +74,11 @@ function unique(items: string[]): string[] {
   return Array.from(new Set(items));
 }
 
-function scorePhilosophy(patch: VisualPatchDocument, analysis: TargetDesignAnalysis | undefined): CritiqueScore {
+function scorePhilosophy(
+  patch: VisualPatchDocument,
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): CritiqueScore {
   const draft: ScoreDraft = {
     score: 8,
     rationale: [`The patch has a named recipe: ${patch.recipe}.`],
@@ -73,6 +93,10 @@ function scorePhilosophy(patch: VisualPatchDocument, analysis: TargetDesignAnaly
     draft.score += 1;
     draft.rationale.push("Target analysis captured design signals that can justify the direction.");
   }
+  if (dna?.designSignals.length) {
+    draft.score += 1;
+    draft.rationale.push("Page design DNA captured surrounding product signals for context.");
+  }
   if (!analysis) {
     draft.score -= 2;
     draft.rationale.push("No target analysis was captured.");
@@ -83,10 +107,10 @@ function scorePhilosophy(patch: VisualPatchDocument, analysis: TargetDesignAnaly
     draft.rationale.push("A dark treatment without an explicit dark-mode goal can drift away from product context.");
     draft.fixes.push("Use dark mode only when the goal or brand contract supports it.");
   }
-  if (hasRisk(analysis, /generic font|purple-blue|fake proof/i)) {
+  if (hasRisk(analysis, /generic font|purple-blue|fake proof/i) || hasDnaRisk(dna, /Generic font|Purple-blue|fake proof/i)) {
     draft.score -= 1;
     draft.rationale.push("Analysis detected risks that may weaken the design philosophy.");
-    draft.fixes.push("Resolve or explicitly justify every risk listed in design-analysis.md.");
+    draft.fixes.push("Resolve or explicitly justify every risk listed in design-analysis.md and design-dna.md.");
   }
 
   return {
@@ -141,7 +165,11 @@ function scoreHierarchy(patch: VisualPatchDocument, analysis: TargetDesignAnalys
   };
 }
 
-function scoreCraft(patch: VisualPatchDocument, analysis: TargetDesignAnalysis | undefined): CritiqueScore {
+function scoreCraft(
+  patch: VisualPatchDocument,
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): CritiqueScore {
   const keys = operationKeys(patch);
   const draft: ScoreDraft = {
     score: 8,
@@ -172,6 +200,11 @@ function scoreCraft(patch: VisualPatchDocument, analysis: TargetDesignAnalysis |
     draft.rationale.push("Target analysis detected craft risks.");
     draft.fixes.push("Address the listed craft risks before claiming completion.");
   }
+  if (hasDnaRisk(dna, /Many distinct color|Generic font|Card-heavy/i)) {
+    draft.score -= 1;
+    draft.rationale.push("Page design DNA detected system-level craft risks.");
+    draft.fixes.push("Use design-dna.md to avoid adding more ad hoc color, type, or card treatments.");
+  }
   if (draft.rationale.length === 0) {
     draft.rationale.push("Craft evidence is neutral.");
   }
@@ -184,7 +217,11 @@ function scoreCraft(patch: VisualPatchDocument, analysis: TargetDesignAnalysis |
   };
 }
 
-function scoreFunctionality(patch: VisualPatchDocument, analysis: TargetDesignAnalysis | undefined): CritiqueScore {
+function scoreFunctionality(
+  patch: VisualPatchDocument,
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): CritiqueScore {
   const selectors = patch.operations.map((operation) => operation.selector).join(" ");
   const draft: ScoreDraft = {
     score: 8,
@@ -216,6 +253,9 @@ function scoreFunctionality(patch: VisualPatchDocument, analysis: TargetDesignAn
     draft.score += 1;
     draft.rationale.push("Functional target signals were captured for handoff.");
   }
+  if (dna && dna.componentSignals.forms + dna.componentSignals.inputs > 0) {
+    draft.rationale.push("Page DNA shows form-like UI exists; implementation should preserve state and accessibility conventions.");
+  }
   if (draft.rationale.length === 0) {
     draft.rationale.push("Functionality evidence is limited but no hard issue was detected.");
   }
@@ -228,7 +268,11 @@ function scoreFunctionality(patch: VisualPatchDocument, analysis: TargetDesignAn
   };
 }
 
-function scoreOriginality(patch: VisualPatchDocument, analysis: TargetDesignAnalysis | undefined): CritiqueScore {
+function scoreOriginality(
+  patch: VisualPatchDocument,
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): CritiqueScore {
   const draft: ScoreDraft = {
     score: 8,
     rationale: [],
@@ -244,10 +288,14 @@ function scoreOriginality(patch: VisualPatchDocument, analysis: TargetDesignAnal
     draft.rationale.push("The old generic premium recipe name is not specific enough.");
     draft.fixes.push("Use Signature polish, Editorial layout, Product clarity, or a source-specific route.");
   }
-  if (hasRisk(analysis, /fake|filler|purple-blue|decorative|generic/i)) {
+  if (hasDetectedAiSignatureRisk(analysis) || hasDetectedDnaAiSignatureRisk(dna)) {
     draft.score -= 2;
     draft.rationale.push("Analysis detected common AI design signatures.");
     draft.fixes.push("Remove or justify every generic visual/content signal before handoff.");
+  }
+  if (dna?.assets.some((asset) => asset.role === "brand" || asset.role === "product")) {
+    draft.score += 1;
+    draft.rationale.push("Page DNA found brand or product assets that can make the result more specific.");
   }
   if (analysis && analysis.density.media > 0) {
     draft.score += 1;
@@ -270,21 +318,29 @@ function scoreOriginality(patch: VisualPatchDocument, analysis: TargetDesignAnal
   };
 }
 
-function hardFailsFor(scores: CritiqueScore[], analysis: TargetDesignAnalysis | undefined): string[] {
+function hardFailsFor(
+  scores: CritiqueScore[],
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): string[] {
   const hardFails: string[] = [];
   if (scores.some((score) => score.score < 6)) {
     hardFails.push("At least one critique dimension is below 6/10.");
   }
-  if (hasRisk(analysis, /fake metrics|fake proof|fake people|fake quotes/i)) {
+  if (hasDetectedFakeProofRisk(analysis) || hasDnaRisk(dna, /^Generic filler copy or fake proof/i)) {
     hardFails.push("Potential fake content/proof was detected.");
   }
-  if (hasRisk(analysis, /purple-blue AI gradient/i)) {
+  if (hasRisk(analysis, /purple-blue AI gradient/i) || hasDnaRisk(dna, /Purple-blue AI color/i)) {
     hardFails.push("Possible purple-blue AI gradient signal needs brand evidence.");
   }
   return hardFails;
 }
 
-function quickWinsFor(scores: CritiqueScore[], analysis: TargetDesignAnalysis | undefined): string[] {
+function quickWinsFor(
+  scores: CritiqueScore[],
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): string[] {
   const fixes = unique(scores.flatMap((score) => score.fixes));
   if (fixes.length > 0) return fixes.slice(0, 5);
 
@@ -296,21 +352,25 @@ function quickWinsFor(scores: CritiqueScore[], analysis: TargetDesignAnalysis | 
   if (analysis?.risks.length) {
     wins.unshift("Resolve or justify every risk listed in design-analysis.md.");
   }
+  if (dna?.risks.length) {
+    wins.unshift("Resolve or justify every risk listed in design-dna.md.");
+  }
   return wins.slice(0, 5);
 }
 
 export function createWispDesignCritique(patch: VisualPatchDocument): WispDesignCritique {
   const analysis = activeAnalysis(patch);
+  const dna = patch.designDna;
   const scores = [
-    scorePhilosophy(patch, analysis),
+    scorePhilosophy(patch, analysis, dna),
     scoreHierarchy(patch, analysis),
-    scoreCraft(patch, analysis),
-    scoreFunctionality(patch, analysis),
-    scoreOriginality(patch, analysis)
+    scoreCraft(patch, analysis, dna),
+    scoreFunctionality(patch, analysis, dna),
+    scoreOriginality(patch, analysis, dna)
   ];
   const overallScore =
     Math.round((scores.reduce((sum, score) => sum + score.score, 0) / scores.length) * 10) / 10;
-  const hardFails = hardFailsFor(scores, analysis);
+  const hardFails = hardFailsFor(scores, analysis, dna);
   const pass = overallScore >= 8 && hardFails.length === 0 && scores.every((score) => score.score >= 8);
 
   return {
@@ -324,7 +384,7 @@ export function createWispDesignCritique(patch: VisualPatchDocument): WispDesign
     confidence: analysis ? "medium" : "low",
     scores,
     hardFails,
-    quickWins: quickWinsFor(scores, analysis),
+    quickWins: quickWinsFor(scores, analysis, dna),
     notes: [
       "This is a deterministic preflight critique from captured operations and target analysis.",
       "It does not replace human visual QA against before.png and after.png.",

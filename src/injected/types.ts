@@ -75,6 +75,56 @@ export type TargetDesignAnalysis = {
   risks: string[];
 };
 
+export type PageDesignDna = {
+  title: string;
+  language: string;
+  colorScheme: string;
+  tokens: {
+    colors: Array<{
+      value: string;
+      count: number;
+      roles: string[];
+    }>;
+    fonts: Array<{
+      family: string;
+      count: number;
+    }>;
+    radii: Array<{
+      value: string;
+      count: number;
+    }>;
+    shadows: Array<{
+      value: string;
+      count: number;
+    }>;
+    spacing: Array<{
+      value: string;
+      count: number;
+    }>;
+  };
+  assets: Array<{
+    kind: string;
+    source: string;
+    alt: string;
+    role: string;
+    width: number;
+    height: number;
+  }>;
+  componentSignals: {
+    headings: number;
+    links: number;
+    buttons: number;
+    inputs: number;
+    media: number;
+    navs: number;
+    forms: number;
+    cards: number;
+  };
+  frameworkHints: string[];
+  designSignals: string[];
+  risks: string[];
+};
+
 export type VisualOperation =
   | {
       type: "css_rule";
@@ -92,6 +142,20 @@ export type VisualOperation =
       text: string;
     };
 
+export type DesignIteration = {
+  id: number;
+  action: "initial" | "retry" | "push" | "refine" | "undo";
+  goal: string;
+  effectiveGoal: string;
+  recipe: string;
+  intensity: number;
+  operationCount: number;
+  operationTypes: string[];
+  changedSelectors: string[];
+  summary: string;
+  selected: boolean;
+};
+
 export type PatchPayload = {
   url: string;
   viewport: {
@@ -102,6 +166,9 @@ export type PatchPayload = {
   recipe: string;
   target: TargetInfo;
   operations: VisualOperation[];
+  acceptedIterationId?: number;
+  iterations?: DesignIteration[];
+  designDna?: PageDesignDna;
   analysis?: {
     before?: TargetDesignAnalysis;
     after?: TargetDesignAnalysis;

@@ -1,4 +1,4 @@
-import type { TargetDesignAnalysis, VisualPatchDocument } from "./visualPatch.js";
+import type { PageDesignDna, TargetDesignAnalysis, VisualPatchDocument } from "./visualPatch.js";
 
 export type WispDesignDirection = {
   id: string;
@@ -46,7 +46,11 @@ function compactTarget(patch: VisualPatchDocument): boolean {
   return patch.target.bounds.width < 480 || patch.target.bounds.height < 220;
 }
 
-function assumptionList(patch: VisualPatchDocument, analysis: TargetDesignAnalysis | undefined): string[] {
+function assumptionList(
+  patch: VisualPatchDocument,
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): string[] {
   const assumptions = [
     "The approved after.png remains the source of truth; these directions are implementation routes, not extra scope.",
     "If the target app has DESIGN.md, tokens, brand docs, or component APIs, those override inferred Wisp defaults.",
@@ -64,6 +68,12 @@ function assumptionList(patch: VisualPatchDocument, analysis: TargetDesignAnalys
   }
   if (hasMedia(analysis)) {
     assumptions.push("Media exists in the target, so asset-led composition should beat decorative generated imagery.");
+  }
+  if (dna?.designSignals.length) {
+    assumptions.push("Page design DNA captured surrounding system signals; preserve them unless stronger source evidence says otherwise.");
+  }
+  if (dna?.risks.length) {
+    assumptions.push("Page design DNA captured system-level risks; resolve or justify them before adding new visual language.");
   }
   return assumptions;
 }
@@ -156,7 +166,10 @@ function editorialDirection(
   };
 }
 
-function systemDirection(analysis: TargetDesignAnalysis | undefined): WispDesignDirection {
+function systemDirection(
+  analysis: TargetDesignAnalysis | undefined,
+  dna: PageDesignDna | undefined
+): WispDesignDirection {
   return {
     id: "system-contract",
     name: "System Contract",
@@ -164,6 +177,9 @@ function systemDirection(analysis: TargetDesignAnalysis | undefined): WispDesign
       "Treat the patch as a design-system alignment problem: tokens, component conventions, density, and proof before style.",
     whenToUse: [
       "The repo has DESIGN.md, tokens, CSS variables, component docs, or an established UI library.",
+      dna?.frameworkHints.length
+        ? `Page design DNA hints at these UI contracts: ${dna.frameworkHints.join(", ")}.`
+        : "No framework hints were captured, so verify tokens and component conventions in source.",
       hasRepeatedContent(analysis)
         ? "Repeated content is present, so consistency and rhythm matter more than one-off styling."
         : "The target is isolated, so avoid creating new global conventions for a local patch.",
@@ -171,6 +187,12 @@ function systemDirection(analysis: TargetDesignAnalysis | undefined): WispDesign
     ],
     visualMoves: [
       "Use existing color, spacing, radius, typography, and shadow tokens first.",
+      dna?.tokens.colors[0]
+        ? `Start from the dominant captured color signal ${dna.tokens.colors[0].value}, then verify source tokens.`
+        : "Find source tokens before introducing new colors.",
+      dna?.tokens.fonts[0]
+        ? `Respect the dominant captured type signal ${dna.tokens.fonts[0].family} unless the source contract says otherwise.`
+        : "Find source typography before introducing new font families.",
       "Standardize repeated nodes through shared classes or component props.",
       "Use stateful variants instead of ad hoc CSS overrides.",
       "Prefer evidence from source files over visual guessing."
@@ -198,17 +220,18 @@ function systemDirection(analysis: TargetDesignAnalysis | undefined): WispDesign
 
 export function createWispDesignDirections(patch: VisualPatchDocument): WispDesignDirections {
   const analysis = analysisFor(patch);
+  const dna = patch.designDna;
   return {
     version: "wisp-design-directions.v1",
     mode: "direction-map",
     goal: patch.goal,
     target: patch.target,
     selectedRecipe: patch.recipe,
-    assumptions: assumptionList(patch, analysis),
+    assumptions: assumptionList(patch, analysis, dna),
     directions: [
       productDirection(patch, analysis),
       editorialDirection(patch, analysis),
-      systemDirection(analysis)
+      systemDirection(analysis, dna)
     ],
     selectionRule:
       "Choose one direction before source edits. If the approved screenshot clearly implies a direction, name it and proceed. If not, implement the closest small variant or document why a variation pass is needed."

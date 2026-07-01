@@ -2,7 +2,24 @@
   "name": "wisppatch",
   "version": "0.1.0",
   "private": true,
-  "description": "Local visual UI patching with Wisp before code changes.",
+  "description": "Point at any website, tell Wisp what to change, and export an implementation-ready visual patch for your coding agent.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ohad6k/WispPatch.git"
+  },
+  "homepage": "https://github.com/ohad6k/WispPatch#readme",
+  "bugs": "https://github.com/ohad6k/WispPatch/issues",
+  "keywords": [
+    "design",
+    "ui",
+    "visual-editing",
+    "playwright",
+    "overlay",
+    "design-tools",
+    "coding-agents",
+    "open-design"
+  ],
   "type": "module",
   "bin": {
     "wisppatch": "dist/cli/index.js"
@@ -10,6 +27,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "demo": "node scripts/serve-demo.mjs",
+    "qa:demo": "node dist/cli/index.js --qa-demo",
     "start": "node dist/cli/index.js",
     "check": "tsc --noEmit"
   },
