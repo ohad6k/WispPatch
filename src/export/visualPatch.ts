@@ -111,6 +111,8 @@ export type VisualPatchDocument = VisualPatchPayload & {
     designAnalysisJson: string;
     designDirections: string;
     designDirectionsJson: string;
+    designCritique: string;
+    designCritiqueJson: string;
     designGate: string;
     designGateJson: string;
     implement: string;
@@ -138,6 +140,8 @@ export function createVisualPatchDocument(
       designAnalysisJson: ".wisppatch/latest/design-analysis.json",
       designDirections: ".wisppatch/latest/design-directions.md",
       designDirectionsJson: ".wisppatch/latest/design-directions.json",
+      designCritique: ".wisppatch/latest/design-critique.md",
+      designCritiqueJson: ".wisppatch/latest/design-critique.json",
       designGate: ".wisppatch/latest/design-gate.md",
       designGateJson: ".wisppatch/latest/design-gate.json",
       implement: ".wisppatch/latest/implement.md",
@@ -152,6 +156,7 @@ export function createVisualPatchDocument(
       "Respect DESIGN.md, brand docs, design tokens, and component conventions when present.",
       "Use design-analysis.md to account for target structure, density, controls, assets, and risks.",
       "Use design-directions.md to choose or justify the implementation direction before source edits.",
+      "Use design-critique.md to resolve preflight issues before handoff.",
       "Preserve or add appropriate interaction states for changed controls.",
       "Complete design-gate.md before claiming the implementation is done.",
       "Score the design brief rubric before handoff; every dimension should be at least 8/10 or have a documented blocker.",

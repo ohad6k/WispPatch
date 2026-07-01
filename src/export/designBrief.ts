@@ -22,6 +22,7 @@ export type WispDesignBrief = {
     visualPatch: string;
     designAnalysis: string;
     designDirections: string;
+    designCritique: string;
     review: string;
     designWorkflow: string;
     assetDirectory: string;
@@ -68,6 +69,7 @@ export function createWispDesignBrief(patch: VisualPatchDocument): WispDesignBri
       visualPatch: ".wisppatch/latest/visualpatch.json",
       designAnalysis: ".wisppatch/latest/design-analysis.md",
       designDirections: ".wisppatch/latest/design-directions.md",
+      designCritique: ".wisppatch/latest/design-critique.md",
       review: ".wisppatch/latest/review.html",
       designWorkflow: "docs/design-workflow.md",
       assetDirectory: "assets/"
@@ -80,6 +82,7 @@ export function createWispDesignBrief(patch: VisualPatchDocument): WispDesignBri
           "Read visualpatch.json for goal, viewport, selector, bounds, recipe, operations, and acceptance criteria.",
           "Read design-analysis.md for the selected target's DOM structure, visible assets, typography, density, and risks.",
           "Read design-directions.md for the target-aware direction map before deciding implementation strategy.",
+          "Read design-critique.md for automatic preflight scores and quick wins.",
           "Search the target repo for DESIGN.md, brand docs, style guides, design tokens, component docs, and existing UI patterns.",
           "Use real brand/product/UI assets when available. If assets are missing, use honest placeholders and record the assumption."
         ]
@@ -106,6 +109,7 @@ export function createWispDesignBrief(patch: VisualPatchDocument): WispDesignBri
         title: "4. Critique and iteration",
         items: [
           "Run the app and compare it to after.png.",
+          "Resolve or explicitly supersede every design-critique.md quick win that applies to the source implementation.",
           "Score the result against the critique rubric in this brief.",
           "If any score is below 8 out of 10, do one focused design iteration or explain the blocker with evidence.",
           "Check at least one desktop viewport and one mobile viewport."
@@ -156,6 +160,7 @@ export function createWispDesignBrief(patch: VisualPatchDocument): WispDesignBri
     completionGates: [
       "Design direction written before source edits.",
       "Design direction route chosen or explicitly superseded with evidence.",
+      "Automatic design critique read and issues resolved, superseded, or documented.",
       "Relevant design contract, tokens, assets, or assumptions recorded.",
       "Implementation visually matches after.png at the approved target.",
       "Desktop and mobile viewport checks completed.",
@@ -219,6 +224,7 @@ ${brief.goal}
 - VisualPatch JSON: ${brief.sources.visualPatch}
 - Design analysis: ${brief.sources.designAnalysis}
 - Design directions: ${brief.sources.designDirections}
+- Design critique: ${brief.sources.designCritique}
 - Review page: ${brief.sources.review}
 - Design workflow: ${brief.sources.designWorkflow}
 - Asset directory: ${brief.sources.assetDirectory}

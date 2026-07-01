@@ -14,6 +14,10 @@ import {
   createWispDesignDirectionsMarkdown
 } from "../export/designDirections.js";
 import {
+  createWispDesignCritique,
+  createWispDesignCritiqueMarkdown
+} from "../export/designCritique.js";
+import {
   createWispDesignGate,
   createWispDesignGateMarkdown
 } from "../export/designGate.js";
@@ -102,6 +106,7 @@ export async function startBridge(context: BridgeContext): Promise<BridgeServer>
         const designAnalysis = createWispDesignAnalysis(patch);
         const designBrief = createWispDesignBrief(patch);
         const designDirections = createWispDesignDirections(patch);
+        const designCritique = createWispDesignCritique(patch);
         const designGate = createWispDesignGate(patch);
         await writeFile(
           context.paths.visualPatchJson,
@@ -139,6 +144,16 @@ export async function startBridge(context: BridgeContext): Promise<BridgeServer>
           "utf8"
         );
         await writeFile(
+          context.paths.designCritiqueJson,
+          `${JSON.stringify(designCritique, null, 2)}\n`,
+          "utf8"
+        );
+        await writeFile(
+          context.paths.designCritiqueMd,
+          createWispDesignCritiqueMarkdown(patch),
+          "utf8"
+        );
+        await writeFile(
           context.paths.designGateJson,
           `${JSON.stringify(designGate, null, 2)}\n`,
           "utf8"
@@ -166,6 +181,8 @@ export async function startBridge(context: BridgeContext): Promise<BridgeServer>
               designAnalysisJson: context.paths.designAnalysisJson,
               designDirections: context.paths.designDirectionsMd,
               designDirectionsJson: context.paths.designDirectionsJson,
+              designCritique: context.paths.designCritiqueMd,
+              designCritiqueJson: context.paths.designCritiqueJson,
               designGate: context.paths.designGateMd,
               designGateJson: context.paths.designGateJson,
               implement: context.paths.implementMd,

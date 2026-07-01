@@ -97,6 +97,8 @@ Approved patches are written to `.wisppatch/latest`:
 | `design-analysis.md` | Human-readable target context so agents can avoid generic design decisions before editing source code. |
 | `design-directions.json` | Machine-readable direction map with target-aware implementation routes. |
 | `design-directions.md` | Human-readable variants inspired by the Wisp design loop: choose a route, justify it, then implement. |
+| `design-critique.json` | Machine-readable automatic preflight critique with scores, hard fails, and quick wins. |
+| `design-critique.md` | Human-readable critique report so weak design output is caught before implementation handoff. |
 | `design-gate.json` | Machine-readable pass/fail gate for design implementation proof. |
 | `design-gate.md` | Agent scorecard for context inventory, asset usage, variation decision, anti-slop scan, responsive proof, and rubric scoring. |
 | `implement.md` | Agent handoff prompt for implementing the approved target in source code. |
@@ -111,6 +113,7 @@ WispPatch does more than export a CSS diff. The generated implementation prompt 
 - read `.wisppatch/latest/design-brief.md` before editing
 - use `.wisppatch/latest/design-analysis.md` to understand the selected target's structure, assets, controls, typography, and risks
 - choose or justify a route from `.wisppatch/latest/design-directions.md` before source edits
+- address `.wisppatch/latest/design-critique.md` hard fails and quick wins before handoff
 - complete `.wisppatch/latest/design-gate.md` before claiming implementation
 - study `before.png`, `after.png`, and the selected target bounds
 - look for `DESIGN.md`, brand docs, style guides, tokens, and component docs

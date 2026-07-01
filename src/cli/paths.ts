@@ -13,6 +13,8 @@ export type OutputPaths = {
   designAnalysisMd: string;
   designDirectionsJson: string;
   designDirectionsMd: string;
+  designCritiqueJson: string;
+  designCritiqueMd: string;
   designGateJson: string;
   designGateMd: string;
   implementMd: string;
@@ -36,6 +38,8 @@ export async function createOutputPaths(cwd = process.cwd()): Promise<OutputPath
     designAnalysisMd: resolve(latest, "design-analysis.md"),
     designDirectionsJson: resolve(latest, "design-directions.json"),
     designDirectionsMd: resolve(latest, "design-directions.md"),
+    designCritiqueJson: resolve(latest, "design-critique.json"),
+    designCritiqueMd: resolve(latest, "design-critique.md"),
     designGateJson: resolve(latest, "design-gate.json"),
     designGateMd: resolve(latest, "design-gate.md"),
     implementMd: resolve(latest, "implement.md"),

@@ -54,6 +54,12 @@ const requiredChecks: DesignGateCheck[] = [
       "Use design-directions.md as the minimum direction map. If direction is still ambiguous, create 2-3 compact alternatives. If after.png is specific enough, state why no extra variation is needed."
   },
   {
+    id: "automatic-critique",
+    label: "Automatic critique addressed",
+    evidence:
+      "Read design-critique.md. Resolve, supersede with stronger visual evidence, or document every hard fail and quick win."
+  },
+  {
     id: "anti-slop-scan",
     label: "AI-slop scan completed",
     evidence:
@@ -122,6 +128,7 @@ export function createWispDesignGate(patch: VisualPatchDocument): WispDesignGate
       "Design direction sentence",
       "Chosen design-directions.md route or superseding evidence",
       "Variation decision",
+      "Design-critique.md result and addressed quick wins",
       "Anti-slop scan result",
       "Rubric scores",
       "Desktop and mobile visual checks",

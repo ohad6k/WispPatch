@@ -56,7 +56,7 @@ export function createReviewHtml(patch: VisualPatchDocument): string {
       </section>
       <section>
         <h2>Design Handoff</h2>
-        <p><a href="design-brief.md">Read design-brief.md</a>, <a href="design-analysis.md">use design-analysis.md</a>, <a href="design-directions.md">choose a design direction</a>, and <a href="design-gate.md">complete design-gate.md</a> before implementing this visual target.</p>
+        <p><a href="design-brief.md">Read design-brief.md</a>, <a href="design-analysis.md">use design-analysis.md</a>, <a href="design-directions.md">choose a design direction</a>, <a href="design-critique.md">address design-critique.md</a>, and <a href="design-gate.md">complete design-gate.md</a> before implementing this visual target.</p>
       </section>
       <section>
         <h2>Operations</h2>

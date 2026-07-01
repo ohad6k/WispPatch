@@ -31,6 +31,8 @@ ${patch.goal}
 - Wisp target analysis JSON: .wisppatch/latest/design-analysis.json
 - Wisp design directions: .wisppatch/latest/design-directions.md
 - Wisp design directions JSON: .wisppatch/latest/design-directions.json
+- Wisp automatic critique: .wisppatch/latest/design-critique.md
+- Wisp automatic critique JSON: .wisppatch/latest/design-critique.json
 - Wisp design gate: .wisppatch/latest/design-gate.md
 - Wisp design gate JSON: .wisppatch/latest/design-gate.json
 - Design workflow: docs/design-workflow.md
@@ -52,7 +54,7 @@ ${operations}
 ## Built-In Design Skill Contract
 Treat the approved screenshots as the source of truth. The operations above are a visual hint from WispPatch, not a command to copy injected CSS blindly.
 
-Before editing, read \`.wisppatch/latest/design-brief.md\`, \`.wisppatch/latest/design-analysis.md\`, \`.wisppatch/latest/design-directions.md\`, and \`.wisppatch/latest/design-gate.md\` if present. Then load any relevant local design guidance or frontend taste skill available in your agent environment. If this repo contains \`docs/design-workflow.md\`, read it before changing UI code.
+Before editing, read \`.wisppatch/latest/design-brief.md\`, \`.wisppatch/latest/design-analysis.md\`, \`.wisppatch/latest/design-directions.md\`, \`.wisppatch/latest/design-critique.md\`, and \`.wisppatch/latest/design-gate.md\` if present. Then load any relevant local design guidance or frontend taste skill available in your agent environment. If this repo contains \`docs/design-workflow.md\`, read it before changing UI code.
 
 Use an Open Design-style contract loop when the target app supports it: find the brand/design contract first, apply the relevant design skill, implement in real components, preview the artifact, critique it against the approved screenshot, then hand off only after verification.
 
@@ -69,15 +71,16 @@ Design quality requirements:
 1. Read \`.wisppatch/latest/design-brief.md\` and \`.wisppatch/latest/design-gate.md\`; list the completion gates that apply.
 2. Read \`.wisppatch/latest/design-analysis.md\`; note the target structure, density, assets, typography, controls, and risks.
 3. Read \`.wisppatch/latest/design-directions.md\`; choose one route or write the evidence that supersedes it.
-4. Inspect the app structure and find the real source files for the selected target.
-5. Look for \`DESIGN.md\`, brand docs, style guides, design tokens, and component-library docs.
-6. Compare \`before.png\` and \`after.png\`; write down the concrete visual deltas before editing.
-7. Implement the smallest source-code change that recreates the approved target.
-8. Run the app and compare the result against \`after.png\`.
-9. Score the result against the design brief critique rubric. Iterate once if any dimension is below 8/10.
-10. Complete the required checks in \`.wisppatch/latest/design-gate.md\`.
-11. Check one desktop viewport and one mobile viewport.
-12. Run the project's normal verification command.
+4. Read \`.wisppatch/latest/design-critique.md\`; list hard fails and quick wins that apply.
+5. Inspect the app structure and find the real source files for the selected target.
+6. Look for \`DESIGN.md\`, brand docs, style guides, design tokens, and component-library docs.
+7. Compare \`before.png\` and \`after.png\`; write down the concrete visual deltas before editing.
+8. Implement the smallest source-code change that recreates the approved target.
+9. Run the app and compare the result against \`after.png\`.
+10. Score the result against the design brief critique rubric. Iterate once if any dimension is below 8/10.
+11. Complete the required checks in \`.wisppatch/latest/design-gate.md\`.
+12. Check one desktop viewport and one mobile viewport.
+13. Run the project's normal verification command.
 
 ## Rules
 - Do not rewrite the app.
@@ -93,6 +96,7 @@ Your final response must include:
 - desktop and mobile visual check evidence
 - target-analysis findings used
 - chosen design-directions route or superseding evidence
+- design-critique hard fails and quick wins addressed
 - critique rubric scores from \`.wisppatch/latest/design-brief.md\`
 - completed checks from \`.wisppatch/latest/design-gate.md\`
 - any dimension below 8/10 and the specific blocker or follow-up
