@@ -1,6 +1,6 @@
 # Wisp Design Workflow
 
-WispPatch turns a visual approval session into an implementation brief. This document defines the built-in design workflow that should guide every exported `design-brief.md`, `design-brief.json`, `design-analysis.md`, `design-analysis.json`, `design-gate.md`, `design-gate.json`, and `implement.md`.
+WispPatch turns a visual approval session into an implementation brief. This document defines the built-in design workflow that should guide every exported `design-brief.md`, `design-brief.json`, `design-analysis.md`, `design-analysis.json`, `design-directions.md`, `design-directions.json`, `design-gate.md`, `design-gate.json`, and `implement.md`.
 
 ## Design Contract
 
@@ -17,6 +17,8 @@ Use these inputs together:
 - `design-brief.json`: the same contract in a machine-readable form for future automation
 - `design-analysis.md`: before/after target context including DOM structure, density, media, controls, computed visual styles, design signals, and risks
 - `design-analysis.json`: the same target context in a machine-readable form for future automation
+- `design-directions.md`: target-aware design routes that encode the Wisp loop's variation step before source edits
+- `design-directions.json`: the same direction map in a machine-readable form for future automation
 - `design-gate.md`: the scorecard an implementing agent must complete before claiming the patch is done
 - `design-gate.json`: the same gate in a machine-readable form for future automation
 - local brand or product assets when available
@@ -26,20 +28,21 @@ Use these inputs together:
 
 ## Agent Loop
 
-1. Read `design-brief.md`, `design-analysis.md`, and `design-gate.md`; list the completion gates that apply.
+1. Read `design-brief.md`, `design-analysis.md`, `design-directions.md`, and `design-gate.md`; list the completion gates that apply.
 2. Use `design-analysis.md` to understand the selected target's structure, assets, controls, density, and risks.
-3. Read the target app structure before editing.
-4. Open `before.png` and `after.png`; identify the concrete visual delta.
-5. Load relevant design guidance or skills before writing UI code.
-6. If the app has a `DESIGN.md` or equivalent brand contract, treat it as binding.
-7. Prefer existing design tokens, component APIs, and layout primitives.
-8. Implement only the files needed to match the approved target.
-9. Run the app and compare the result against `after.png`.
-10. Score the result against the design brief rubric.
-11. Complete every required check in `design-gate.md`.
-12. Iterate once if any score is below 8/10, or document the blocker with evidence.
-13. Check at least one mobile viewport and one desktop viewport.
-14. Run the project's normal typecheck, lint, build, or test command.
+3. Choose one route from `design-directions.md`, or write the stronger evidence that supersedes the route map.
+4. Read the target app structure before editing.
+5. Open `before.png` and `after.png`; identify the concrete visual delta.
+6. Load relevant design guidance or skills before writing UI code.
+7. If the app has a `DESIGN.md` or equivalent brand contract, treat it as binding.
+8. Prefer existing design tokens, component APIs, and layout primitives.
+9. Implement only the files needed to match the approved target.
+10. Run the app and compare the result against `after.png`.
+11. Score the result against the design brief rubric.
+12. Complete every required check in `design-gate.md`.
+13. Iterate once if any score is below 8/10, or document the blocker with evidence.
+14. Check at least one mobile viewport and one desktop viewport.
+15. Run the project's normal typecheck, lint, build, or test command.
 
 ## Wisp Runtime Learning Loop
 
@@ -60,7 +63,7 @@ Every Wisp design brief converts these workflows into explicit gates:
 - Open Design pattern: readable design contracts, reusable skills, templates, sandbox preview, critique before handoff.
 - design-taste-frontend pattern: high-variance layout, calibrated palette, anti-card-overuse, real states, motion through transform and opacity.
 - Huashu pattern: context and asset discovery first, assumptions before polish, variations when direction is weak, critique across philosophy alignment, hierarchy, craft, functionality, and originality.
-- User Wisp loop: assets plus goal, visual target, iteration until similar, then implementation.
+- User Wisp loop: assets plus goal, target analysis, direction map, visual target, iteration until similar, then implementation.
 
 The runtime overlay mirrors the same loop with target-aware design passes. Quick actions such as Signature polish, Design system, Editorial layout, and CTA focus are only direction locks; the exported brief still requires the implementing agent to study the real app, reuse its assets and tokens, and prove the result against the approved screenshot.
 
@@ -106,6 +109,7 @@ An implementation is complete when:
 - any existing `DESIGN.md`, brand guide, or component contract is respected
 - `design-gate.md` required checks are completed with evidence
 - `design-analysis.md` findings are used or explicitly superseded by stronger source-code evidence
+- `design-directions.md` is used to choose or justify the implementation route
 - the selected target still behaves correctly
 - surrounding page sections remain intact
 - the app remains responsive

@@ -80,7 +80,7 @@ Panels:
 Review artifacts:
 
 - Screenshots are the primary proof.
-- `visualpatch.json`, `design-brief.md`, `design-analysis.md`, `design-gate.md`, and `implement.md` are part of one contract.
+- `visualpatch.json`, `design-brief.md`, `design-analysis.md`, `design-directions.md`, `design-gate.md`, and `implement.md` are part of one contract.
 
 ## 6. Motion
 
