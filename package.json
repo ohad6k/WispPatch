@@ -1,0 +1,24 @@
+{
+  "name": "wisppatch",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local visual UI patching with Wisp before code changes.",
+  "type": "module",
+  "bin": {
+    "wisppatch": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "demo": "node scripts/serve-demo.mjs",
+    "start": "node dist/cli/index.js",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.3"
+  }
+}
